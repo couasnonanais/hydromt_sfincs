@@ -160,14 +160,17 @@ class SfincsModel(Model):
             Method used to reproject topobathy data, by default 'bilinear'
         """
         name = self._MAPS["elevtn"]
-        # read data (lazy!) and return dataset
-        ds_org = self.data_catalog.get_rasterdataset(
-            basemaps_fn, single_var_as_array=False, variables=["elevtn"]
-        )
-        # get region and clip data
+        
+        # get region and clip data 
         kind, region = hydromt.workflows.parse_region(region, logger=self.logger)
         geom = region.get("geom", None)
         bbox = region.get("bbox", None)
+        
+        # read data (lazy!) and return dataset
+        ds_org = self.data_catalog.get_rasterdataset(
+            basemaps_fn, bbox=bbox, geom=geom, single_var_as_array=False, variables=["elevtn"]
+        )
+
         if kind not in ["bbox", "geom"]:
             raise ValueError(
                 "Unknown region type for SFINCS model: {kind}, select from ['bbox', 'geom']"
